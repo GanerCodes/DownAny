@@ -6,9 +6,9 @@ Install:
 Use:
 `python downany.py <link> <args>`
 
-Args are:
-    Video: for yt-dlp
-    Audio: also yt-dlp but extracts audio
-    Gallery OR image: for gallery-dl
-    File OR wget: for wget
+Args are:  
+    Video: for yt-dlp  
+    Audio: also yt-dlp but extracts audio  
+    Gallery OR image: for gallery-dl  
+    File OR wget: for wget  
     NoPlaylist: disable entire playlist downloading for video and audio args
