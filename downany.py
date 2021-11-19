@@ -25,27 +25,34 @@ def downloadWget(link, folder = ""):
 
 def download(link, args = "", baseDir = "download"):
     args = list(filter(None, args.lower().split(' ')))
-    baseFold = f"{baseDir}/{hsh := qsha(link)[:24]}"
+    baseFold = f"{baseDir}/{(hsh := qsha(link)[:24])}"
     
-    print(f'''Downloading "{link}" with args "{', '.join(args)}" to location "{}"''')
+    print(f'''Downloading "{link}" with args "{', '.join(args)}" to location "{baseFold}"''')
     procs = []
     if len(args) == 0:
         print("No downloader options provided, trying video, gallery, and wget")
         args = "video gallery wget"
     if "video" in args:
         print("Downloading as: video")
-        procs.append(downloadYoutube(link, audioOnly = 0, noPlaylist = ("noplaylist" in args), folder = f"{baseFold}/video"))
+        procs.append(("video", downloadYoutube(link, audioOnly = 0, noPlaylist = ("noplaylist" in args), folder = f"{baseFold}/video")))
     if "audio" in args:
         print("Downloading as: audio")
-        procs.append(downloadYoutube(link, audioOnly = 1, noPlaylist = ("noplaylist" in args), folder = f"{baseFold}/audio"))
+        procs.append(("audio", downloadYoutube(link, audioOnly = 1, noPlaylist = ("noplaylist" in args), folder = f"{baseFold}/audio")))
     if "gallery" in args or "image" in args:
         print("Downloading as: gallery")
-        procs.append(downloadGallery(link, folder = f"{baseFold}/gallery"))
-    if "file" in args or "wget" in args:
-        print("Downloading as: file")
-        procs.append(downloadWget(link, folder = f"{baseFold}/wget"))
+        procs.append(("gallery", downloadGallery(link, folder = f"{baseFold}/gallery")))
+    if "wget" in args or "file" in args:
+        print("Downloading as: wget")
+        procs.append(("wget", downloadWget(link, folder = f"{baseFold}/wget")))
     
-    return [(i[1].returncode, i[0]) for i in procs if i[1].wait() or True]
+    final = []
+    for proc in procs:
+        t, p = proc
+        p[1].wait()
+        if os.path.exists(p[0]) and len(dr := os.listdir(p[0])):
+            final.append((t, p[1].returncode, f"{p[0]}/{dr[0]}" if len(dr) == 1 else p[0]))
+    
+    return final
 
 if __name__ == "__main__":
     from sys import argv
