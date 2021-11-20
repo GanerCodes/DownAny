@@ -49,8 +49,9 @@ def download(link, args = "", baseDir = "download"):
     for proc in procs:
         t, p = proc
         p[1].wait()
-        if os.path.exists(p[0]) and len(dr := os.listdir(p[0])):
-            final.append((t, p[1].returncode, f"{p[0]}/{dr[0]}" if len(dr) == 1 else p[0]))
+        expectedDir = f"{baseFold}{p[0]}"
+        if os.path.exists(expectedDir) and len(dr := os.listdir(expectedDir)):
+            final.append((t, p[1].returncode, f"{expectedDir}/{dr[0]}" if len(dr) == 1 else expectedDir))
     
     return final
 
